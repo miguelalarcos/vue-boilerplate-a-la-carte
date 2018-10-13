@@ -5,7 +5,7 @@
         <router-view></router-view>
       </transition>
     </v-content>
-    <v-footer :fixed="fixed" app>
+    <v-footer app>
       <span>&copy; 2017</span>
     </v-footer>
   </v-app>

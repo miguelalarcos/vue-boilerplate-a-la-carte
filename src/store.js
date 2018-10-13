@@ -16,7 +16,7 @@ export default new Vuex.Store({
     sdp: moduleSocket,
   },
   state: {
-    jwt: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoibWlndWVsIn0.XnBRt8Lo5aG0UjWWgPi683fgWi3yBNh4gZVh9YW-9Fg',
+    jwt: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoibWlndWVsIiwicm9sZXMiOlsiYmFzaWMiLCJhZG1pbiJdfQ.v0u6CeUcanlNUBcX_rVDRDY2e6NCXshYZ7gHgsUTDKM',
     result: '',
     form: {
       age: 0

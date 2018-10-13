@@ -80,12 +80,16 @@ export const SDP_Mixin = {
             return flags
         },
         $sub(name, filter, subId) {
+            console.log('entro en $sub', name, filter, subId)
             subId = subId || name
             if(!this.subs_.includes(subId)){
+                console.log('this.subs_.push(subId)', subId)
                 this.subs_.push(subId)
             }
+            console.log('sendunsub', this.$store.state.jwt)
             sendUnSub(this.rws.ws, subId, this.$store.state.jwt)  
             subs[id] = {id: subId, filter}
+            console.log('send sub', this.$store.state.jwt)
             sendSub(this.rws.ws, subId, filter, this.$store.state.jwt)
         },
         $rpc(name, params){

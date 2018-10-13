@@ -57,9 +57,11 @@ export default {
   watch: {
     maxChange: {
       immediate: true,
-      handle({isConnected, max}){
-        if(isConnected)
+      handler(newVal, oldVal){
+        const {isConnected, max} = newVal
+        if(isConnected){
           this.$sub('x_less_than', {max})
+        }
         else
           console.log('connecting...')
       }
