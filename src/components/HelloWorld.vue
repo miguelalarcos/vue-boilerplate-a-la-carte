@@ -57,6 +57,7 @@ export default {
   watch: {
     maxChange: {
       immediate: true,
+      // eslint-disable-next-line
       handler(newVal, oldVal){
         const {isConnected, max} = newVal
         if(isConnected){

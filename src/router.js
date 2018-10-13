@@ -4,10 +4,11 @@ import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import About from './views/About.vue'
 import HelloWorld from './components/HelloWorld'
+import store from './store'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -24,9 +25,29 @@ export default new Router({
         },
         {
           path: '/hello',
-          component: HelloWorld
+          component: HelloWorld,
+          meta: { requiresAuth: true}
         }
       ]
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.state.jwt === null) {
+      next({
+        path: '/login',
+        query: {
+          redirect: to.fullPath,
+        },
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
+export default router
