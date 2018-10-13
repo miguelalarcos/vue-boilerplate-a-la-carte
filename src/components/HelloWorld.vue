@@ -1,41 +1,69 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-unit-jest" target="_blank" rel="noopener">unit-jest</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="hello" v-if="$subsReady">
+    <number-input v-model="age"></number-input>
+    <span class="red">{{$store.state.errors.age}}</span>
+    <h1>{{ msg }}, el umbral está en {{ max }}:</h1>
+    <div class="pointer" @click="inc(c.id, 1)" v-bind:key="c.id" v-for="c in myCounters">
+      {{ c.x }}
+    </div>  
+    <v-btn @click="suma">2 + 3 = </v-btn>
+    <span>{{valor}}</span> 
+  </div>
+  <div v-else>
+    Loading...
   </div>
 </template>
 
 <script>
+import { SDP_Mixin } from '../sdp'
+import numberInput from '@/components/numberInput'
 export default {
   name: 'HelloWorld',
+  mixins: [SDP_Mixin],
   props: {
     msg: String
+  },
+  data(){
+    return {
+      valor: null,
+      max: 5
+    }
+  },
+  computed: {
+    maxChange(){
+      return {isConnected: this.isConnected, max:this.max}
+    },
+    myCounters(){
+      return this.$store.state.sdp.subs.x_less_than
+    },
+    age: {
+        get() {
+            return this.$store.state.form.age
+        },
+        set(value) {
+            this.$store.commit('setAge', value)
+        }
+    }
+  },
+  components: {numberInput},
+  methods: {
+    async suma(){
+      this.valor = await this.$rpc('add', {a: 2, b: 3})
+    },
+    async inc(id, value){
+      this.$rpc('increment', {id, value})
+    }
+  },
+  watch: {
+    maxChange: {
+      immediate: True,
+      handle({isConnected, max}){
+        if(isConnected)
+          this.$sub('x_less_than', {max})
+        else
+          console.log('connecting...')
+      }
+    }
   }
 }
 </script>
@@ -55,5 +83,11 @@ li {
 }
 a {
   color: #42b983;
+}
+.red{
+  color: red;
+}
+.pointer{
+  cursor: pointer;
 }
 </style>
