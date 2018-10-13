@@ -10,8 +10,8 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field v-model="username" prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
-                  <v-text-field v-model="password" id="password" prepend-icon="lock" name="password" label="Password" type="password"></v-text-field>
+                  <v-text-field v-model="username" prepend-icon="person" name="login" label="usuario" type="text"></v-text-field>
+                  <v-text-field v-model="password" id="password" prepend-icon="lock" name="password" label="contraseña" type="password"></v-text-field>
                 </v-form>
               </v-card-text>
               <v-card-actions>
