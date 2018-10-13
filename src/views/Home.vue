@@ -10,7 +10,7 @@
       app
     >
       <v-list>
-        <v-list-tile :to="{path: '/about'}"
+        <v-list-tile :to="{path: '/hello'}"
           value="true"
           v-for="(item, i) in items"
           :key="i"

@@ -56,7 +56,7 @@ export default {
   },
   watch: {
     maxChange: {
-      immediate: True,
+      immediate: true,
       handle({isConnected, max}){
         if(isConnected)
           this.$sub('x_less_than', {max})
