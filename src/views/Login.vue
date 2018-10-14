@@ -17,6 +17,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="login" color="primary">Login</v-btn>
+                <div>{{ error }}</div>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -33,6 +34,11 @@ export default {
     return {
       username: null,
       password: null
+    }
+  },
+  computed: {
+    error(){
+      return this.$store.state.loginError
     }
   },
   methods: {
