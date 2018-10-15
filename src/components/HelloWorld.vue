@@ -1,11 +1,15 @@
 <template>
   <div class="hello" v-if="$subsReady">
-    <number-input v-model="age"></number-input>
-    <span class="red">{{$store.state.errors.age}}</span>
-    <h1>{{ msg }}, el umbral está en {{ max }}:</h1>
-    <div class="pointer" @click="inc(c.id, 1)" v-bind:key="c.id" v-for="c in myCounters">
-      {{ c.x }}
-    </div>  
+    <!--<number-input v-model="age"></number-input>
+    <span class="red">{{$store.state.errors.age}}</span>-->
+    <h1>el umbral está en {{ max }}:</h1>
+    <v-button @click="create">Crear contador a 0</v-button>
+    <!--https://vuejs.org/v2/guide/transitions.html-->
+    <transition-group name="fade" tag="div">
+      <div class="pointer" @click="inc(c.id, 1)" v-bind:key="c.id" v-for="c in myCounters">
+        {{ c.x }}
+      </div>  
+    </transition-group>
     <v-btn @click="suma">2 + 3 = </v-btn>
     <span>{{valor}}</span> 
   </div>
@@ -47,6 +51,9 @@ export default {
   },
   components: {numberInput},
   methods: {
+    async create(){
+      await this.$rpc('create')
+    },
     async suma(){
       this.valor = await this.$rpc('add', {a: 2, b: 3})
     },
@@ -73,6 +80,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 h3 {
   margin: 40px 0 0;
 }

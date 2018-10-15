@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import About from './views/About.vue'
 import HelloWorld from './components/HelloWorld'
+import Chat from './components/Chat'
+import ChatAdmin from './components/ChatAdmin'
 import store from './store'
 
 Vue.use(Router)
@@ -26,6 +28,15 @@ const router = new Router({
         {
           path: '/hello',
           component: HelloWorld,
+          meta: { requiresAuth: true}
+        },
+        {
+          path: '/chat',
+          component: Chat
+        },
+        {
+          path: '/chat-admin',
+          component: ChatAdmin,
           meta: { requiresAuth: true}
         }
       ]
