@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-bind:key="r.id" v-for="r in rooms">
-        <chat :initialRoom="r.id"></chat>    
+        <chat :admin="true" :initialRoom="r.id"></chat>    
         </div> 
     </div>
 </template>
