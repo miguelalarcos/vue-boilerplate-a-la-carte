@@ -3,7 +3,7 @@
     <!--<number-input v-model="age"></number-input>
     <span class="red">{{$store.state.errors.age}}</span>-->
     <h1>el umbral está en {{ max }}:</h1>
-    <v-button @click="create">Crear contador a 0</v-button>
+    <v-btn @click="create">Crear contador a 0</v-btn>
     <!--https://vuejs.org/v2/guide/transitions.html-->
     <transition-group name="fade" tag="div">
       <div class="pointer" @click="inc(c.id, 1)" v-bind:key="c.id" v-for="c in myCounters">
@@ -52,7 +52,7 @@ export default {
   components: {numberInput},
   methods: {
     async create(){
-      await this.$rpc('create')
+      await this.$rpc('create', {})
     },
     async suma(){
       this.valor = await this.$rpc('add', {a: 2, b: 3})
