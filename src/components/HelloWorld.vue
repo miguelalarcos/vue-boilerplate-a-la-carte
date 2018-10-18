@@ -19,13 +19,16 @@
 </template>
 
 <script>
-import { SDP_Mixin } from '../sdp'
+import { SDP_Mixin, sdpComputed } from '../sdp'
 import numberInput from '@/components/numberInput'
 export default {
   name: 'HelloWorld',
   mixins: [SDP_Mixin],
   props: {
     msg: String
+  },
+  predicates: {
+    maxChange: ['x_less_than', 'max']
   },
   data(){
     return {
@@ -35,7 +38,8 @@ export default {
   },
   computed: {
     maxChange(){
-      return {isConnected: this.isConnected, max:this.max}
+      return sdpComputed(this, 'max')
+      //return {isConnected: this.isConnected, max:this.max}
     },
     myCounters(){
       return this.$store.state.sdp.subs.x_less_than
@@ -60,7 +64,7 @@ export default {
     async inc(id, value){
       this.$rpc('increment', {id, value})
     }
-  },
+  }/*,
   watch: {
     maxChange: {
       immediate: true,
@@ -74,7 +78,7 @@ export default {
           console.log('connecting...')
       }
     }
-  }
+  }*/
 }
 </script>
 

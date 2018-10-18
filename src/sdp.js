@@ -54,19 +54,46 @@ class Deferred{
     }
 }
 
+export const sdpComputed = (self, ...args) => {
+    let ret = {isConnected: self.isConnected}
+    args.forEach(arg => {
+        ret[arg] = self[arg]
+    })
+    return ret
+}
+
 export const SDP_Mixin = {
     data: function(){
         return {
             subs_: []
         }
     },
-    beforeCreate(){
-        this.rws = rws
-
+    created(){
+        Object.keys(this.$options.predicates).forEach(p => {
+            const name = this.$options.predicates[p][0]
+            // eslint-disable-next-line
+            const [_, ...args] = this.$options.predicates[p]
+            this.$watch(p, {
+                immediate: true,
+                // eslint-disable-next-line
+                handler(newVal, oldVal){
+                    const {isConnected} = newVal
+                    if(isConnected){
+                        const kwargs = {}
+                        args.forEach(arg => {
+                            kwargs[arg] = this[arg]
+                        })
+                        this.$sub(name, kwargs)
+                    }
+                    else
+                        console.log('connecting...')
+                }
+            })
+        })
     },
     beforeDestroy() {
         this.subs_.forEach(subId => {
-            sendUnSub(this.rws.ws, subId)
+            sendUnSub(rws.ws, subId)
         });
     },
     computed: {
@@ -87,16 +114,16 @@ export const SDP_Mixin = {
                 this.subs_.push(subId)
             }
             console.log('sendunsub', this.$store.state.jwt)
-            sendUnSub(this.rws.ws, subId, this.$store.state.jwt)  
+            sendUnSub(rws.ws, subId, this.$store.state.jwt)  
             subs[id] = {id: subId, filter}
             console.log('send sub', this.$store.state.jwt)
-            sendSub(this.rws.ws, subId, filter, this.$store.state.jwt)
+            sendSub(rws.ws, subId, filter, this.$store.state.jwt)
         },
         $rpc(name, params){
             id += 1;
             const deferred = new Deferred()
             deferreds[id] = deferred
-            sendRPC(this.rws.ws, name, id+'', params, this.$store.state.jwt)
+            sendRPC(rws.ws, name, id+'', params, this.$store.state.jwt)
             return deferred.promise
         }
     }
@@ -178,3 +205,4 @@ export const moduleSocket = {
       }
     }
 }
+
