@@ -22,15 +22,18 @@
     },
     computed: {
         rooms(){
-            return this.$store.state.sdp.open_chat_rooms
+            return this.$store.state.sdp.subs.open_chat_rooms
         },
     },
-    watch:{
+    created(){
+        this.$sub('open_chat_rooms', {})
+    },
+    /*watch:{
         isConnected(connected){
             if(connected && this.room)
                 this.$sub('open_chat_rooms')
         }
-    },
+    },*/
     methods: {
         
     }

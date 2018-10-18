@@ -3,7 +3,7 @@
         <transition-group name="fade" tag="div">
             <div v-bind:key="m.id" v-for="m in messages">
                 <div>{{ m.msg }}</div>
-                <div>{{ m.user }}, {{ m.timestamp }}</div>
+                <div>{{ m.user }} {{ m.timestamp }}</div>
             </div>  
         </transition-group>
         <v-textarea
@@ -34,8 +34,10 @@
         },
     },
     watch:{
-        isConnected(connected){
-            if(connected && this.room)
+        //isConnected(connected){
+        room(){
+            console.log('--->', this.room)
+            //if(connected && this.room)
                 this.$sub('messages_of_room', {room: this.room})
         }
     },
@@ -44,10 +46,11 @@
             await this.$rpc('close_room', {room: this.room})
         },
         async newMessage(){
-            if(this.room === null){
-                this.room = await this.$rpc('create_room')
+            if(!this.room){
+                this.room = await this.$rpc('create_room', {})
             }
             this.$rpc('new_message', {room: this.room, msg: this.msg})
+            this.msg = ''
         },
         async assign(){
             this.$rpc('set_owner_of_room', {room: this.room})
