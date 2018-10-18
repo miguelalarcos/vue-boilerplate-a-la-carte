@@ -12,6 +12,7 @@
     </transition-group>
     <v-btn @click="suma">2 + 3 = </v-btn>
     <span>{{valor}}</span> 
+    <v-btn @click="$closeSocket">cerrar socket</v-btn>
   </div>
   <div v-else>
     Loading...

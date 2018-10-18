@@ -102,6 +102,9 @@ export const SDP_Mixin = {
         }
     },
     methods: {
+        $closeSocket(){
+            rws.ws.close()
+        },
         $subsReady(){
             const flags = this.subs_.every(x => this.$store.state.sdp.ready[x])
             return flags
