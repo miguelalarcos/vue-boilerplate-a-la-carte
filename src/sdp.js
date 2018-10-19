@@ -70,9 +70,8 @@ export const SDP_Mixin = {
     },
     created(){
         Object.keys(this.$options.predicates).forEach(p => {
-            const name = this.$options.predicates[p][0]
-            // eslint-disable-next-line
-            const [_, ...args] = this.$options.predicates[p]
+            //const name = this.$options.predicates[p][0]
+            const [name, ...args] = this.$options.predicates[p]
             this.$watch(p, {
                 immediate: true,
                 // eslint-disable-next-line
@@ -106,20 +105,15 @@ export const SDP_Mixin = {
             rws.ws.close()
         },
         $subsReady(){
-            const flags = this.subs_.every(x => this.$store.state.sdp.ready[x])
-            return flags
+            return this.subs_.every(x => this.$store.state.sdp.ready[x])
         },
         $sub(name, filter, subId) {
-            console.log('entro en $sub', name, filter, subId)
             subId = subId || name
             if(!this.subs_.includes(subId)){
-                console.log('this.subs_.push(subId)', subId)
                 this.subs_.push(subId)
             }
-            console.log('sendunsub', this.$store.state.jwt)
             sendUnSub(rws.ws, subId, this.$store.state.jwt)  
             subs[id] = {id: subId, filter}
-            console.log('send sub', this.$store.state.jwt)
             sendSub(rws.ws, subId, filter, this.$store.state.jwt)
         },
         $rpc(name, params){
@@ -151,6 +145,40 @@ function sendRPC (socket, name, RPCId, params, jwt) {
     send(socket, data)
 }
 
+export function initialize(state, data){
+    state.subs = {...state.subs, [data.id]: []}
+    state.ready = {...state.ready, [data.id]: false}
+}
+
+export function ready(state, data){
+    state.ready = {...state.ready, [data.id]: true}
+}
+
+export function handleData(state, data){
+    const sub = state.subs[data.id]
+    if (data.msg === 'added') {
+        if(!sub.map(x => x.id).includes(data.doc.id))
+            state.subs = {...state.subs, [data.id]: [...sub, data.doc]}
+    } else if (data.msg === 'changed') {
+        const index = sub.findIndex(item => item.id === data.doc.id)
+        const tmp = [
+            ...sub.slice(0, index),
+            data.doc,
+            ...sub.slice(index + 1)
+        ]
+        state.subs = {...state.subs, [data.id]: tmp}
+    } else {                                
+        const index = sub.findIndex(item => item.id === data.doc_id)
+        if(index !== -1){
+            let tmp = [
+                ...sub.slice(0, index),
+                ...sub.slice(index + 1)
+            ]
+            state.subs = {...state.subs, [data.id]: tmp}                
+        }
+    }
+}
+
 export const moduleSocket = {
     state: {
         isConnected: false,
@@ -171,37 +199,13 @@ export const moduleSocket = {
       },
       SOCKET_ONMESSAGE (state, data)  {
         if(data.msg === 'initializing'){
-            state.subs = {...state.subs, [data.id]: []}
-            state.ready = {...state.ready, [data.id]: false}
+            initialize(state, data)
         }
         else if(data.msg === 'ready'){
-            state.ready = {...state.ready, [data.id]: true}
+            ready(state, data)            
         }
         else if (['added', 'changed', 'removed'].includes(data.msg)) {            
-            //if(state.subs[data.id] === undefined)
-            //    state.subs[data.id] = []
-            const sub = state.subs[data.id]
-            if (data.msg === 'added') {
-                if(!sub.map(x => x.id).includes(data.doc.id))
-                    state.subs = {...state.subs, [data.id]: [...sub, data.doc]}
-            } else if (data.msg === 'changed') {
-                const index = sub.findIndex(item => item.id === data.doc.id)
-                const tmp = [
-                    ...sub.slice(0, index),
-                    data.doc,
-                    ...sub.slice(index + 1)
-                ]
-                state.subs = {...state.subs, [data.id]: tmp}
-            } else {                                
-                const index = sub.findIndex(item => item.id === data.doc_id)
-                if(index !== -1){
-                    let tmp = [
-                        ...sub.slice(0, index),
-                        ...sub.slice(index + 1)
-                    ]
-                    state.subs = {...state.subs, [data.id]: tmp}                
-                }
-            }
+            handleData(state, data)
         } else if (data.msg === 'error') { 
             state.error = data.error
         }
